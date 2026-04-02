@@ -15,7 +15,14 @@ namespace ProductApi.Infrastructure.DependencyInjection
             // Register your infrastructure services here
             //For example: services.AddScoped<IProductRepository, ProductRepository>();
 
-            SharedServiceContainer.AddSharedServices<ProductDbContext>(services, config, config["MySerilog:FileName"]!);
+            var fileName = config["MySerilog:FileName"] ?? "default-log";
+
+            SharedServiceContainer.AddSharedServices<ProductDbContext>(
+                services,
+                config,
+                fileName
+            );
+            //SharedServiceContainer.AddSharedServices<ProductDbContext>(services, config, config["MySerilog:FileName"]!);
 
             services.AddScoped<IProductRepository, ProductRepository>();
 
