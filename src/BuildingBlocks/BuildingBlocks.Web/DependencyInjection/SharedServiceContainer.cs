@@ -12,19 +12,35 @@ namespace BuildingBlocks.Web.DependencyInjection
         public static IServiceCollection AddSharedServices<TContext>(this IServiceCollection services, IConfiguration config, string fileName) where TContext : DbContext
         {
             //Add Generic Database context
-            services.AddJWTAuthenticationScheme(config);
 
-            services.AddDbContext<TContext>(option => option.UseSqlServer(
-                config.
-                GetConnectionString("eCommerceConnection"), sqlServerOption =>
-                sqlServerOption.EnableRetryOnFailure()));
+            //services.AddJWTAuthenticationScheme(config);
 
+            //services.AddDbContext<TContext>(option => option.UseSqlServer(
+            //    config.
+            //    GetConnectionString("eCommerceConnection"), sqlServerOption =>
+            //    sqlServerOption.EnableRetryOnFailure()));
+
+            var connectionString = config.GetConnectionString("eCommerceConnection");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new Exception("Connection string 'eCommerceConnection' not found.");
+            }
+
+            services.AddDbContext<TContext>(options =>
+                options.UseSqlServer(connectionString, sqlServerOption =>
+                    sqlServerOption.EnableRetryOnFailure()));
+
+            Directory.CreateDirectory("Logs");
+
+            var logPath = Path.Combine("Logs", $"{fileName}-.log");
             //configure serilog logging
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.Debug()
                 .WriteTo.Console()
-                .WriteTo.File($"Logs/{fileName}-.text",
+                //.WriteTo.File($"Logs/{fileName}-.log", 
+                .WriteTo.File(logPath,
                 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:Lj}{NewLine}{Exception}",
                 rollingInterval: RollingInterval.Day)
