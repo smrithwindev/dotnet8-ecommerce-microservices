@@ -61,5 +61,21 @@ namespace ProductApi.Presentation.Controllers
             return response.flag is true ? Ok(response) : BadRequest(response);
         }
 
+        [HttpPut]
+        public async Task<ActionResult<Response>> UpdateProduct(ProductDTO productDto)
+        {
+            //Check ModelState if all annotations are passed
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            //convert data to entity
+            var product = ProductMappings.ToEntity(productDto);
+            //Update product in the repo
+            var response = await _productRepository.UpdateAsync(product);
+            return response.flag is true ? Ok(response) : BadRequest(response);
+
+
+        }
     }
 }
