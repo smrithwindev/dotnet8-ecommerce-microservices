@@ -74,8 +74,15 @@ namespace ProductApi.Presentation.Controllers
             //Update product in the repo
             var response = await _productRepository.UpdateAsync(product);
             return response.flag is true ? Ok(response) : BadRequest(response);
+        }
 
-
+        [HttpDelete]
+        public async Task<ActionResult<Response>> DeleteProduct(ProductDTO productDto)
+        {
+            //Delete product from the repo
+            var product = ProductMappings.ToEntity(productDto);
+            var response = await _productRepository.DeleteAsync(product);
+            return response.flag is true ? Ok(response) : BadRequest(response);
         }
     }
 }
