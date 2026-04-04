@@ -1,46 +1,56 @@
 ﻿using ProductApi.Application.DTOs;
-using ProductApi.Domain.Entities;
+using ProductApi.Domain.Entities;     //here we are not using AutoMapper for simplicity, we are doing manual mapping
 
 namespace ProductApi.Application.Mappings
 {
-    public class ProductMappings               //// here we are not using AutoMapper for simplicity, we are doing manual mapping
-    {
-        public static Product ToEntity(ProductDTO product) => new()
+        public static class ProductMappings
         {
-            Id = product.Id,
-            Name = product.Name,
-            Quantity = product.Quantity,
-            Price = product.Price
-        };
-
-        public static (ProductDTO, IEnumerable<ProductDTO>?) FromEntity(Product product, IEnumerable<Product> products)
-        {
-            if (product is not null || products is null)
+            // 🔹 Single entity → DTO
+            public static ProductDTO ToDto(Product product)
             {
-                var singleProduct = new ProductDTO
+                return new ProductDTO
                 (
                     Id: product.Id,
                     Name: product.Name!,
                     Quantity: product.Quantity,
                     Price: product.Price
                 );
-                return (singleProduct, null);
             }
 
-            if (products is not null || product is null)
+            // 🔹 Collection → DTO list
+            public static IEnumerable<ProductDTO> ToDtoList(IEnumerable<Product> products)
             {
-                var _products = products!.Select(p =>
-                new ProductDTO
+                return products.Select(p => new ProductDTO
                 (
                     p.Id,
                     p.Name!,
                     p.Quantity,
                     p.Price
-                )).ToList();
-                return (null!, _products);
+                ));
             }
 
-            return (null!, null);
-        }
+            // 🔹 DTO → Entity
+            public static Product ToEntity(ProductDTO dto)
+            {
+                return new Product
+                {
+                    Id = dto.Id,
+                    Name = dto.Name,
+                    Quantity = dto.Quantity,
+                    Price = dto.Price
+                };
+            }
+
+            //when you only require bulk operations
+            public static IEnumerable<Product> ToEntityList(IEnumerable<ProductDTO> dtos)
+            {
+                return dtos.Select(dto => new Product
+                {
+                    Id = dto.Id,
+                    Name = dto.Name,
+                    Quantity = dto.Quantity,
+                    Price = dto.Price
+                });
+            }
     }
 }
