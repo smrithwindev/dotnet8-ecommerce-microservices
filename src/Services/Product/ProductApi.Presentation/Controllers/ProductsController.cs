@@ -46,6 +46,20 @@ namespace ProductApi.Presentation.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<Response>> CreateProduct(ProductDTO productDto)
+        {
+            //Check ModelState if all annotations are passed
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            //convert data to entity
+            var product = ProductMappings.ToEntity(productDto);
+            //Add product to the repo
+            var response = await _productRepository.CreateAsync(product);
+            return response.flag is true ? Ok(response) : BadRequest(response);
+        }
 
     }
 }
