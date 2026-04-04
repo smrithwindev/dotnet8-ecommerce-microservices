@@ -32,6 +32,20 @@ namespace ProductApi.Presentation.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ProductDTO>> GetProductById(int id)
+        {
+            //Get single product from the repo
+            var product = await _productRepository.FindByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound($"product with ID {id} is not found");
+            }
+            //convert data from entity to DTO
+            var response = ProductMappings.ToDto(product);
+            return Ok(response);
+        }
+
 
     }
 }
