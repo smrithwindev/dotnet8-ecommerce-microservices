@@ -9,7 +9,7 @@ namespace BuildingBlocks.Core.Interfaces
 
         Task<Response> UpdateAsync(T entity);
 
-        Task<Response> DeleteAsync(T entity);
+        Task<Response> DeleteAsync(int id);
 
         Task<IEnumerable<T>> GetAllAsync();
 

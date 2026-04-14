@@ -47,7 +47,7 @@ namespace ProductApi.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Response>> CreateProduct(ProductDTO productDto)
+        public async Task<ActionResult<Response>> CreateProduct(UpdateProductDto productDto)
         {
             //Check ModelState if all annotations are passed
             if (!ModelState.IsValid)
@@ -76,13 +76,11 @@ namespace ProductApi.Presentation.Controllers
             return response.flag is true ? Ok(response) : BadRequest(response);
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<Response>> DeleteProduct(ProductDTO productDto)
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<Response>> DeleteProduct(int id)
         {
-            //Delete product from the repo
-            var product = ProductMappings.ToEntity(productDto);
-            var response = await _productRepository.DeleteAsync(product);
-            return response.flag is true ? Ok(response) : BadRequest(response);
+            var response = await _productRepository.DeleteAsync(id);
+            return response.flag ? Ok(response) : NotFound(response);
         }
     }
 }
