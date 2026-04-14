@@ -1,6 +1,9 @@
 ﻿using BuildingBlocks.Web.Logging;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Net;
 using System.Text.Json;
 
@@ -53,6 +56,25 @@ namespace BuildingBlocks.Web.Middleware
                 //Log Original Exceptions /File,Debugger, Console
                 LogException.LogExceptions(ex);
 
+                //Get environment (Development / Production)
+                var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+
+                //Show REAL error in Development
+                if (env.IsDevelopment())
+                {
+                    context.Response.StatusCode = 500;
+                    context.Response.ContentType = "application/json";
+
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(new ProblemDetails()
+                    {
+                        Title = "Development Exception",
+                        Detail = ex.ToString(), // 🔥 THIS IS WHAT YOU WERE MISSING
+                        Status = 500
+                    }));
+
+                    return; // 🔥 STOP further execution
+                }
+
                 //check if Exception is Timeout // 408 request timeout
                 if (ex is TaskCanceledException || ex is TimeoutException)
                 {
@@ -68,6 +90,7 @@ namespace BuildingBlocks.Web.Middleware
         }
         private static async Task ModifyHeader(HttpContext context, string title, string message, int statusCode)
         {
+            context.Response.StatusCode = statusCode; 
             //display scary-free message to client
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(JsonSerializer.Serialize(new ProblemDetails()
