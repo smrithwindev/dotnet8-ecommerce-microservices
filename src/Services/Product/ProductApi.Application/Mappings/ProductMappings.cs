@@ -1,5 +1,6 @@
 ﻿using ProductApi.Application.DTOs;
-using ProductApi.Domain.Entities;     //here we are not using AutoMapper for simplicity, we are doing manual mapping
+using ProductApi.Domain.Entities;
+using System.Data;     //here we are not using AutoMapper for simplicity, we are doing manual mapping
 
 namespace ProductApi.Application.Mappings
 {
@@ -41,8 +42,18 @@ namespace ProductApi.Application.Mappings
                 };
             }
 
-            //when you only require bulk operations
-            public static IEnumerable<Product> ToEntityList(IEnumerable<ProductDTO> dtos)
+            public static Product ToEntity(UpdateProductDto dto)
+            {
+                return new Product
+                {
+                    Name = dto.Name,
+                    Quantity = dto.Quantity,
+                    Price = dto.Price
+                };
+        }
+
+        //when you only require bulk operations
+        public static IEnumerable<Product> ToEntityList(IEnumerable<ProductDTO> dtos)
             {
                 return dtos.Select(dto => new Product
                 {
