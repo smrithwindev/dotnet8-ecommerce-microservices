@@ -40,18 +40,18 @@ namespace ProductApi.Infrastructure.Repositories
                 LogException.LogExceptions(ex);
 
                 //display scary-free message to the client
-                return new Response(false, "An error occurred while adding the product");
+                throw;
             }
         }
 
-        public async Task<Response> DeleteAsync(Product entity)
+        public async Task<Response> DeleteAsync(int id)
         {
             try
             {
-                var product = await FindByIdAsync(entity.Id);  // FindByIdAsync implementation has to be given in the below method
+                var product = await FindByIdAsync(id);  // FindByIdAsync implementation has to be given in the below method
                 if (product is null)
                 {
-                    return new Response(false, $"{entity.Name} not found");
+                    return new Response(false,"Product not found");
                 }
 
                 context.Products.Remove(product);
@@ -64,7 +64,7 @@ namespace ProductApi.Infrastructure.Repositories
                 LogException.LogExceptions(ex);
 
                 //display scary-free message to the client
-                return new Response(false, "An error occurred while deleting the product");
+                throw;
             }
         }
 
@@ -81,7 +81,7 @@ namespace ProductApi.Infrastructure.Repositories
                 LogException.LogExceptions(ex);
 
                 //display scary-free message to the client
-                throw new Exception("An error occurred while retreiving the product");
+                throw;
             }
         }
 
@@ -98,7 +98,7 @@ namespace ProductApi.Infrastructure.Repositories
                 LogException.LogExceptions(ex);
 
                 //display scary-free message to the client
-                throw new Exception("An error occurred while retreiving the product");
+                throw;
             }
         }
 
@@ -115,7 +115,7 @@ namespace ProductApi.Infrastructure.Repositories
                 LogException.LogExceptions(ex);
 
                 //display scary-free message to the client
-                throw new Exception("An error occurred while retreiving the product");
+                throw;
             }
         }
 
@@ -140,7 +140,7 @@ namespace ProductApi.Infrastructure.Repositories
                 LogException.LogExceptions(ex);
 
                 //display scary-free message to the client
-                return new Response(false,"An error occurred while updating existing product");
+                throw;
             }
         }
     }
